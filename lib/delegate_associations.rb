@@ -48,7 +48,6 @@ module DelegateAssociations
 		
 		associations.each do |association|
 			get_deletage_methods(reflect_on_association(association).klass.column_names, exept, only).each do |attribute| 
-					puts "#{options[:suffix]}"
 				options[:suffix].each do |sf|
 					delegate "#{attribute}#{sf}", to: association, allow_nil: options[:allow_nil]
 				end
