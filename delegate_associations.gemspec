@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "delegate_associations"
-  s.version     = "0.1.0"
+  s.version     = "0.1.1"
   s.description = "A gem for delegate attributes and associations of belongs_to and has_one"
   s.summary     = "A gem for delegate attributes and associations of belongs_to and has_one"
   s.homepage    = "https://github.com/Brunomm/delegate_associations"
