@@ -12,13 +12,13 @@ module DelegateAssociations
 		associations = [options.delete(:to)].flatten.compact.map!(&:to_sym)
 		valid_associations_to(associations)
 
-		exept = [options[:exept]].flatten.compact.map!(&:to_sym)
+		except = [options[:except]].flatten.compact.map!(&:to_sym)
 		only  = [options[:only]].flatten.compact.map!(&:to_sym)
-		exept += delegate_exclude_columns
+		except += delegate_exclude_columns
 
 		associations.each do |association|
 			reflect_on_association(association).klass.reflect_on_all_associations.each do |ass|
-				next unless ass.name.in?(get_deletage_methods(reflect_on_association(association).klass.reflect_on_all_associations.map(&:name), exept, only))
+				next unless ass.name.in?(get_deletage_methods(reflect_on_association(association).klass.reflect_on_all_associations.map(&:name), except, only))
 				if ass.collection?
 					delegate "#{ass.name}", to: association, allow_nil: options[:allow_nil]
 					delegate "#{ass.name}=", to: association, allow_nil: options[:allow_nil]
@@ -42,12 +42,12 @@ module DelegateAssociations
 		#Valid if have an option[:to] and if association exists
 		valid_associations_to(associations)
 
-		exept = [options[:exept]].flatten.compact.map!(&:to_sym)
+		except = [options[:except]].flatten.compact.map!(&:to_sym)
 		only  = [options[:only]].flatten.compact.map!(&:to_sym)
-		exept += delegate_exclude_columns
+		except += delegate_exclude_columns
 		
 		associations.each do |association|
-			get_deletage_methods(reflect_on_association(association).klass.column_names, exept, only).each do |attribute| 
+			get_deletage_methods(reflect_on_association(association).klass.column_names, except, only).each do |attribute| 
 				options[:suffix].each do |sf|
 					delegate "#{attribute}#{sf}", to: association, allow_nil: options[:allow_nil]
 				end
@@ -57,9 +57,9 @@ module DelegateAssociations
 
 	private
 
-	def get_deletage_methods(all_options, exept, only)
+	def get_deletage_methods(all_options, except, only)
 		return (all_options.map(&:to_sym)&only)-delegate_exclude_columns if only.any?
-		all_options.map(&:to_sym) - exept
+		all_options.map(&:to_sym) - except
 	end
 
 	def valid_associations_to(associations)
