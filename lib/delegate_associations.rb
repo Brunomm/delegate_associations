@@ -19,12 +19,15 @@ module DelegateAssociations
 		associations.each do |association|
 			reflect_on_association(association).klass.reflect_on_all_associations.each do |ass|
 				next unless ass.name.in?(get_deletage_methods(reflect_on_association(association).klass.reflect_on_all_associations.map(&:name), except, only))
-				if ass.collection?
-					delegate "#{ass.name}", to: association, allow_nil: options[:allow_nil]
-					delegate "#{ass.name}=", to: association, allow_nil: options[:allow_nil]
-				else
-					delegate "#{ass.name}", to: association
-					delegate "#{ass.name}=", to: association
+				delegate "#{ass.name}",  to: association, allow_nil: options[:allow_nil]
+				delegate "#{ass.name}=", to: association, allow_nil: options[:allow_nil]
+				begin 
+					delegate "#{ass.name}_attributes=", to: association, allow_nil: options[:allow_nil]
+				rescue
+					true
+				end
+				
+				unless ass.collection?
 					delegate "build_#{ass.name}", to: association
 				end
 			end
