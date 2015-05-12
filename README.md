@@ -11,7 +11,7 @@ class Person < ActiveRecord::Base
 end
 
 class User < ActiveRecord::Base
-  belongs_to :person
+  belongs_to :person, autosave: true
   # columns: :login, :password
   
   def person
