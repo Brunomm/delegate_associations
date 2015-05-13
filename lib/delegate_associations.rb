@@ -49,12 +49,18 @@ module DelegateAssociations
 		only  = [options[:only]].flatten.compact.map!(&:to_sym)
 		except += delegate_exclude_columns
 		
-		associations.each do |association|
-			get_deletage_methods(reflect_on_association(association).klass.column_names, except, only).each do |attribute| 
-				options[:suffix].each do |sf|
-					delegate "#{attribute}#{sf}", to: association, allow_nil: options[:allow_nil]
+		# I need "begin" because have a problem with Devise when I run migrations
+		# Devise call User classs before run all migrations
+		begin
+			associations.each do |association|
+				get_deletage_methods(reflect_on_association(association).klass.column_names, except, only).each do |attribute| 
+					options[:suffix].each do |sf|
+						delegate "#{attribute}#{sf}", to: association, allow_nil: options[:allow_nil]
+					end
 				end
 			end
+		rescue
+			true
 		end
 	end
 
