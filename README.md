@@ -1,21 +1,42 @@
+[![Gem Version](https://badge.fury.io/rb/delegate_associations.svg)](https://badge.fury.io/rb/delegate_associations)
+
 # delegate_associations
 
 ## Usage
 
 ```ruby
+class Address < ActiveRecord::Base
+  # columns: :city, :district
+  
+end
+
 class Person < ActiveRecord::Base
+  # columns: :name, email, :phone, :address_id
+  
+  belongs_to :address
   has_one :user
   has_many :books
-  
-  # columns: :name, email, :phone
+
+  def address
+    super || build_address # It's very important
+  end
+
+  delegate_attributes to: :address, prefix: true  
 end
+
+new_person =Person.new(name: "Joe", email: 'joe@mail.com', address_city: 'São Paulo', address_district: 'South Zone')
+new_person.name # Joe
+new_person.address_city # 'São Paulo'
+new_person.address.city # 'São Paulo'
+new_person.address_district # 'South Zone'
+new_person.address.district # 'South Zone'
 
 class User < ActiveRecord::Base
   belongs_to :person, autosave: true
   # columns: :login, :password
   
   def person
-    super || build_person
+    super || build_person # It's very important
   end
   
   delegate_associations to: :person
